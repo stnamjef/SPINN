@@ -21,7 +21,7 @@ The Symbiosis of Deep Learning and Differential Equations (DLDE), NeurIPS 2022 W
 #### 0. If you're using Google Colab, just run the code
 
 #### 1. Install Docker and NVIDIA Container Toolkit
-* Please follow the official [document](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker) for installation
+* Please follow the official [document](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker) for installation.
 * If you already installed both of them, please skip this part.
 
 #### 2. Build the docker image
@@ -38,7 +38,7 @@ docker run -it -v $(pwd):/workspace -p 8888:8888 --gpus all --ipc host --name sp
 ```
 
 #### 4. Launch Jupyter and run the code
-* run the command below inside the container
+* run the command below inside the container.
 ```
 jupyter notebook --allow-root --ip 0.0.0.0 --port 8888
 ```
