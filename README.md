@@ -21,8 +21,8 @@ The Symbiosis of Deep Learning and Differential Equations (DLDE), NeurIPS 2022 W
 #### 0. If you're using Google Colab, just run the code
 
 #### 1. Install Docker and NVIDIA Container Toolkit
-* Please follow the official [document](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker) for installation.
-* If you already installed both of them, please skip this part.
+* please follow the official [document](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker) for installation.
+* if you already installed both of them, please skip this part.
 
 #### 2. Build the docker image
 * run the command below at "/your/path/to/SPINN".
