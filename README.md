@@ -32,7 +32,7 @@ docker build -t spinn_environment .
 ```
 
 #### 3. Run the docker image
-* run the command below at "your/path/to/SPINN".
+* run the command below at "/your/path/to/SPINN".
 ```
 docker run -it -v $(pwd):/workspace -p 8888:8888 --gpus all --ipc host --name spinn spinn_environment:latest
 ```
