@@ -1,0 +1,1 @@
+XLA_PYTHON_CLIENT_PREALLOCATE=false CUDA_VISIBLE_DEVICES=0 python helmholtz3d.py --model=spinn --equation=helmholtz3d --nc=16 --nc_test=100 --seed=111 --lr=0.001 --epochs=50000 --mlp=modified_mlp --n_layers=4 --features=64 --r=32 --out_dim=1 --pos_enc=0 --a1=4 --a2=4 --a3=3 --log_iter=5000 --plot_iter=10000

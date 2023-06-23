@@ -1,0 +1,1 @@
+XLA_PYTHON_CLIENT_PREALLOCATE=false CUDA_VISIBLE_DEVICES=0 python diffusion3d.py --data_dir=./data/diffusion3d --model=pinn --equation=diffusion3d --nc=16 --seed=111 --lr=0.001 --epochs=50000 --mlp=modified_mlp --n_layers=5 --features=128 --out_dim=1 --pos_enc=0 --log_iter=10000 --plot_iter=50000

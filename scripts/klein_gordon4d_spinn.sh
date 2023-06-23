@@ -1,0 +1,1 @@
+XLA_PYTHON_CLIENT_PREALLOCATE=false CUDA_VISIBLE_DEVICES=0 python klein_gordon4d.py --model=spinn --equation=klein_gordon4d --nc=64 --nc_test=50 --seed=111 --lr=1e-3 --epochs=50000 --mlp=modified_mlp --n_layers=4 --features=64 --r=32 --out_dim=1 --k=1 --log_iter=1000

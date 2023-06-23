@@ -1,0 +1,1 @@
+XLA_PYTHON_CLIENT_PREALLOCATE=false CUDA_VISIBLE_DEVICES=0 python klein_gordon3d.py --model=pinn --equation=klein_gordon3d --nc=16 --nc_test=100 --seed=111 --lr=0.001 --epochs=50000 --mlp=modified_mlp --n_layers=5 --features=128 --out_dim=1 --pos_enc=0 --k=2 --log_iter=1000 --plot_iter=1000

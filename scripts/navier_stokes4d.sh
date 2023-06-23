@@ -1,0 +1,1 @@
+XLA_PYTHON_CLIENT_PREALLOCATE=false CUDA_VISIBLE_DEVICES=0 python navier_stokes4d.py --model=spinn --equation=navier_stokes4d --nc=32 --nc_test=20 --seed=111 --lr=1e-3 --epochs=50000 --mlp=modified_mlp --n_layers=5 --features=64 --r=128 --out_dim=3 --lbda_c=100 --lbda_ic=10 --log_iter=1000 --plot_iter=10000
