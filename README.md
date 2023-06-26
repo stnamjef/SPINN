@@ -44,6 +44,44 @@ docker run -it -v $(pwd):/workspace -p 8888:8888 --gpus all --ipc host --name sp
 jupyter notebook --allow-root --ip 0.0.0.0 --port 8888
 ```
 
+# Training 
+* you can run each experiment by running ```<EQUATION_Nd>.py```.
+* to disable the memory preallocation, assign the environment variable ```XLA_PYTHON_CLIENT_PREALLOCATE``` to ```false```.
+```
+XLA_PYTHON_CLIENT_PREALLOCATE=false CUDA_VISIBLE_DEVICES=0 python <EQUATION_Nd>.py --model=<MODEL> --equation=<EQUATION_Nd>
+```
+* you can also reproduce with our configurations by running the scripts ```SPINN/scripts/<EQUATION_Nd_MODEL>.sh```
+* configurations   
+```--data_dir```: directory to the reference data if needed   
+```--model```: model (PINN or SPINN)   
+```--equation```: name of the equation and the spatio-temporal dimension   
+```--nc```: number of collocation points sampled from each axis   
+```--nc_test```: number of test points sampled from each axis   
+```--seed```: random seed   
+```--lr```: learning rate   
+```--epochs```: training epochs   
+```--mlp```: type of MLP (mlp or modified_mlp)   
+```--n_layers```: depth of each MLP   
+```--features```: width of each MLP   
+```--r```: rank of SPINN   
+```--out_dim```: output dimension (channel size) of the model   
+```--pos_enc```: size of the positional encoding (0 if not used)   
+```--log_iter```: logging every ... epoch   
+```--plot_iter```: visualize the solution every ... epoch   
+```--a1``` ```--a2``` ```--a3```: (HELMHOLTZ EQUATION) frequency in the manufactured solution $\sin(a_1\pi x)+\sin(a_2\pi y)+\sin(a_3\pi z)$   
+```--k```: (KLEIN_GORDON_EQUATION) temporal frequency of the manufactured solution   
+```--nt```: (NAVIER_STOKES_EQUATION) number of sampled collocation points in the temporal domain   
+```--nxy```: (NAVIER_STOKES_EQUATION 3D) number of sampled collocation points in the spatial domain   
+```--offset_num```: (NAVIER_STOKES_EQUATION 3D) number of input grid set   
+```--offset_iter```: (NAVIER_STOKES_EQUATION 3D) change the grid set every ... epoch   
+```--marching_steps```: (NAVIER_STOKES_EQUATION 3D) number of time window   
+```--step_idx```: (NAVIER_STOKES_EQUATION 3D) index of the time window   
+```--lbda_c```: (NAVIER_STOKES_EQUATION 3D and 4D) weighting factor for incompressible condition loss   
+```--lbda_ic```: (NAVIER_STOKES_EQUATION 3D and 4D) weighting factor for initial condition loss   
+
+
+
+
 # Example (Klein-Gordon Eq.)
 #### Please visit our [project page](https://jwcho5576.github.io/spinn/) for more examples.
 
