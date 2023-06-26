@@ -97,9 +97,9 @@ if __name__ == '__main__':
     parser.add_argument('--pos_enc', type=int, default=0, help='size of the positional encoding (zero if no encoding)')
 
     # helmholtz coefficients
-    parser.add_argument('--a1', type = int, default = 4, help = 'sin(a1*pi*x)+sin(a2*pi*y)+sin(a3*pi*z)')
-    parser.add_argument('--a2', type = int, default = 4, help = 'sin(a1*pi*x)+sin(a2*pi*y)+sin(a3*pi*z)')
-    parser.add_argument('--a3', type = int, default = 3, help = 'sin(a1*pi*x)+sin(a2*pi*y)+sin(a3*pi*z)')
+    parser.add_argument('--a1', type = int, default = 4, help = 'sin(a1*pi*x)sin(a2*pi*y)sin(a3*pi*z)')
+    parser.add_argument('--a2', type = int, default = 4, help = 'sin(a1*pi*x)sin(a2*pi*y)sin(a3*pi*z)')
+    parser.add_argument('--a3', type = int, default = 3, help = 'sin(a1*pi*x)sin(a2*pi*y)sin(a3*pi*z)')
     
     # log settings
     parser.add_argument('--log_iter', type=int, default=10000, help='print log every...')
