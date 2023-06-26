@@ -1,5 +1,5 @@
 # Jax implementation of Separable PINN
-### [Project Page](https://jwcho5576.github.io/spinn/) | [Paper](https://arxiv.org/abs/2211.08761)
+### [Arxiv](https://arxiv.org/abs/2211.08761)
 
 [Junwoo Cho](https://github.com/jwcho5576)\*, 
 [Seungtae Nam](https://github.com/stnamjef)\*, 
@@ -83,7 +83,7 @@ XLA_PYTHON_CLIENT_PREALLOCATE=false CUDA_VISIBLE_DEVICES=0 python <EQUATION_Nd>.
 
 
 # Example (Klein-Gordon Eq.)
-#### Please visit our [project page](https://jwcho5576.github.io/spinn/) for more examples.
+\\<!--#### Please visit our [project page](https://jwcho5576.github.io/spinn/) for more examples.-->
 
 https://user-images.githubusercontent.com/47411051/217729201-7e0c2a1d-6d13-4352-9bd6-5054d8ead37d.mp4
 
