@@ -1,5 +1,5 @@
 # Jax implementation of Separable PINN
-### [Arxiv](https://arxiv.org/abs/2211.08761)
+### [arxiv](https://arxiv.org/abs/2306.15969)
 
 [Junwoo Cho](https://github.com/jwcho5576)\*, 
 [Seungtae Nam](https://github.com/stnamjef)\*, 
