@@ -1,5 +1,5 @@
 # Jax implementation of Separable PINN
-### [arxiv](https://arxiv.org/abs/2306.15969)
+### [[arxiv]](https://arxiv.org/abs/2306.15969) [[project page]](https://jwcho5576.github.io/spinn_project_page/)
 
 [Junwoo Cho](https://github.com/jwcho5576)\*, 
 [Seungtae Nam](https://github.com/stnamjef)\*, 
