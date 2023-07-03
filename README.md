@@ -1,4 +1,11 @@
 # Jax implementation of Separable PINN
+
+
+
+https://github.com/stnamjef/SPINN/assets/94037424/5eae6b65-c79c-4140-958f-ae9732575a69
+
+
+
 ### [[arxiv]](https://arxiv.org/abs/2306.15969) [[project page]](https://jwcho5576.github.io/spinn_project_page/)
 
 [Junwoo Cho](https://github.com/jwcho5576)\*, 
@@ -10,11 +17,17 @@
 *Equal contribution, &dagger;Corresponding author.\
 The Symbiosis of Deep Learning and Differential Equations (DLDE), NeurIPS 2022 Workshop.
 
+
+
+
+
+
+
 # Architecture overview
-![architecture](./assets/architecture.png)
+![architecture](https://github.com/stnamjef/SPINN/assets/94037424/bab3aa81-2985-4b7b-9a2b-c901ba1a86a7)
 
 * SPINN consists of multiple MLPs, each of which takes an individual 1-dimensional coordinate as an input.
-* The output is constructed by a simple product and summation.
+* The output is constructed by a simple product and summation which can be interpreted as a low-rank decomposed representation.
 
 
 
@@ -78,14 +91,6 @@ XLA_PYTHON_CLIENT_PREALLOCATE=false CUDA_VISIBLE_DEVICES=0 python <EQUATION_Nd>.
 ```--step_idx```: (NAVIER_STOKES_EQUATION 3D) index of the time window   
 ```--lbda_c```: (NAVIER_STOKES_EQUATION 3D and 4D) weighting factor for incompressible condition loss   
 ```--lbda_ic```: (NAVIER_STOKES_EQUATION 3D and 4D) weighting factor for initial condition loss   
-
-
-
-
-# Example (Klein-Gordon Eq.)
-\\<!--#### Please visit our [project page](https://jwcho5576.github.io/spinn/) for more examples.-->
-
-https://user-images.githubusercontent.com/47411051/217729201-7e0c2a1d-6d13-4352-9bd6-5054d8ead37d.mp4
 
 # Citation
 
