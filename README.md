@@ -1,7 +1,9 @@
 # Jax implementation of Separable PINN
 
 
-https://github.com/stnamjef/SPINN/assets/94037424/124cd583-4d06-49fb-b16d-2af843cb14e4
+
+https://github.com/stnamjef/SPINN/assets/94037424/8cd0d32d-a969-4608-b734-fbb81e19b48f
+
 
 
 ### [[arxiv]](https://arxiv.org/abs/2306.15969) [[project page]](https://jwcho5576.github.io/spinn_project_page/)
@@ -55,13 +57,17 @@ docker run -it -v $(pwd):/workspace -p 8888:8888 --gpus all --ipc host --name sp
 jupyter notebook --allow-root --ip 0.0.0.0 --port 8888
 ```
 
+# Data for 2D Navier-Stokes equation
+You can find the original data here:
+https://github.com/PredictiveIntelligenceLab/CausalPINNs/tree/main/data
+
 # Training 
-* you can run each experiment by running ```<EQUATION_Nd>.py```.
+* you can run each experiment by running ```<EQUATIONnd>.py```.
 * to disable the memory preallocation, assign the environment variable ```XLA_PYTHON_CLIENT_PREALLOCATE``` to ```false```.
 ```
-XLA_PYTHON_CLIENT_PREALLOCATE=false CUDA_VISIBLE_DEVICES=0 python <EQUATION_Nd>.py --model=<MODEL> --equation=<EQUATION_Nd>
+XLA_PYTHON_CLIENT_PREALLOCATE=false CUDA_VISIBLE_DEVICES=0 python <EQUATIONnd>.py --model=<MODEL> --equation=<EQUATIONnd>
 ```
-* you can also reproduce with our configurations by running the scripts ```SPINN/scripts/<EQUATION_Nd_MODEL>.sh```
+* you can also reproduce with our configurations by running the scripts ```SPINN/scripts/<EQUATIONnd_MODEL>.sh```
 * configurations   
 ```--data_dir```: directory to the reference data if needed   
 ```--model```: model (PINN or SPINN)   
@@ -90,12 +96,14 @@ XLA_PYTHON_CLIENT_PREALLOCATE=false CUDA_VISIBLE_DEVICES=0 python <EQUATION_Nd>.
 ```--lbda_c```: (NAVIER_STOKES_EQUATION 3D and 4D) weighting factor for incompressible condition loss   
 ```--lbda_ic```: (NAVIER_STOKES_EQUATION 3D and 4D) weighting factor for initial condition loss   
 
+
 # Citation
 
 ```
-@inproceedings{choseparable,
-  title={Separable PINN: Mitigating the Curse of Dimensionality in Physics-Informed Neural Networks},
+@article{cho2023separable,
+  title={Separable Physics-Informed Neural Networks},
   author={Cho, Junwoo and Nam, Seungtae and Yang, Hyunmo and Yun, Seok-Bae and Hong, Youngjoon and Park, Eunbyung},
-  booktitle={The Symbiosis of Deep Learning and Differential Equations II}
+  journal={arXiv preprint arXiv:2306.15969},
+  year={2023}
 }
 ```
