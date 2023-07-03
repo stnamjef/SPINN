@@ -14,8 +14,7 @@ https://github.com/stnamjef/SPINN/assets/94037424/8cd0d32d-a969-4608-b734-fbb81e
 [Youngjoon Hong](https://www.youngjoonhong.com/), 
 [Seok-Bae Yun](https://seokbaeyun.wordpress.com/), 
 [Eunbyun Park](https://silverbottlep.github.io/)&dagger;\
-*Equal contribution, &dagger;Corresponding author.\
-The Symbiosis of Deep Learning and Differential Equations (DLDE), NeurIPS 2022 Workshop.
+*Equal contribution, &dagger;Corresponding author.
 
 
 
