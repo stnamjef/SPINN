@@ -1,9 +1,7 @@
 # Jax implementation of Separable PINN
 
 
-
-https://github.com/stnamjef/SPINN/assets/94037424/5eae6b65-c79c-4140-958f-ae9732575a69
-
+https://github.com/stnamjef/SPINN/assets/94037424/124cd583-4d06-49fb-b16d-2af843cb14e4
 
 
 ### [[arxiv]](https://arxiv.org/abs/2306.15969) [[project page]](https://jwcho5576.github.io/spinn_project_page/)
