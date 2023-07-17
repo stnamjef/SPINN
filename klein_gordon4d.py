@@ -18,13 +18,15 @@ def apply_model_spinn(apply_fn, params, *train_data):
         # compute u
         u = apply_fn(params, t, x, y, z)
         # tangent vector dx/dx
-        # assumes t, x, y, z have same shape (very important)
-        v = jnp.ones(t.shape)
+        v_t = jnp.ones(t.shape)
+        v_x = jnp.ones(x.shape)
+        v_y = jnp.ones(y.shape)
+        v_z = jnp.ones(z.shape)
         # 2nd derivatives of u
-        utt = hvp_fwdfwd(lambda t: apply_fn(params, t, x, y, z), (t,), (v,))
-        uxx = hvp_fwdfwd(lambda x: apply_fn(params, t, x, y, z), (x,), (v,))
-        uyy = hvp_fwdfwd(lambda y: apply_fn(params, t, x, y, z), (y,), (v,))
-        uzz = hvp_fwdfwd(lambda z: apply_fn(params, t, x, y, z), (z,), (v,))
+        utt = hvp_fwdfwd(lambda t: apply_fn(params, t, x, y, z), (t,), (v_t,))
+        uxx = hvp_fwdfwd(lambda x: apply_fn(params, t, x, y, z), (x,), (v_x,))
+        uyy = hvp_fwdfwd(lambda y: apply_fn(params, t, x, y, z), (y,), (v_y,))
+        uzz = hvp_fwdfwd(lambda z: apply_fn(params, t, x, y, z), (z,), (v_z,))
         return jnp.mean((utt - uxx - uyy - uzz + u**2 - source_term)**2)
 
     def initial_loss(params, t, x, y, z, u):

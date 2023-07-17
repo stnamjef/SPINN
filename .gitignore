@@ -1,3 +1,5 @@
 results/**
 **/__pycache__/**
 data/**
+navier_stokes3d_video.py
+ns_video.ipynb

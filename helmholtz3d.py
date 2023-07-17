@@ -19,12 +19,13 @@ def apply_model_spinn(apply_fn, params, *train_data):
         # compute u
         u = apply_fn(params, x, y, z)
         # tangent vector dx/dx
-        # assumes x, y, z have same shape (very important)
-        v = jnp.ones(x.shape)
+        v_x = jnp.ones(x.shape)
+        v_y = jnp.ones(y.shape)
+        v_z = jnp.ones(z.shape)
         # 2nd derivatives of u
-        uxx = hvp_fwdfwd(lambda x: apply_fn(params, x, y, z), (x,), (v,))
-        uyy = hvp_fwdfwd(lambda y: apply_fn(params, x, y, z), (y,), (v,))
-        uzz = hvp_fwdfwd(lambda z: apply_fn(params, x, y, z), (z,), (v,))
+        uxx = hvp_fwdfwd(lambda x: apply_fn(params, x, y, z), (x,), (v_x,))
+        uyy = hvp_fwdfwd(lambda y: apply_fn(params, x, y, z), (y,), (v_y,))
+        uzz = hvp_fwdfwd(lambda z: apply_fn(params, x, y, z), (z,), (v_z,))
         return jnp.mean(((uzz + uyy + uxx + lda*u) - source_term)**2)
 
     def boundary_loss(params, x, y, z):

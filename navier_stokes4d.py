@@ -25,18 +25,20 @@ def apply_model_spinn(apply_fn, params, nu, lbda_c, lbda_ic, *train_data):
         wy = vory(apply_fn, params, t, x, y, z)
         wz = vorz(apply_fn, params, t, x, y, z)
         # tangent vector dx/dx
-        # assumes t, x, y have same shape (very important)
-        vec = jnp.ones(t.shape)
+        vec_t = jnp.ones(t.shape)
+        vec_x = jnp.ones(x.shape)
+        vec_y = jnp.ones(y.shape)
+        vec_z = jnp.ones(z.shape)
 
         # x-component
-        wx_t = jvp(lambda t: vorx(apply_fn, params, t, x, y, z), (t,), (vec,))[1]
-        wx_x, wx_xx = hvp_fwdfwd(lambda x: vorx(apply_fn, params, t, x, y, z), (x,), (vec,), True)
-        wx_y, wx_yy = hvp_fwdfwd(lambda y: vorx(apply_fn, params, t, x, y, z), (y,), (vec,), True)
-        wx_z, wx_zz = hvp_fwdfwd(lambda z: vorx(apply_fn, params, t, x, y, z), (z,), (vec,), True)
+        wx_t = jvp(lambda t: vorx(apply_fn, params, t, x, y, z), (t,), (vec_t,))[1]
+        wx_x, wx_xx = hvp_fwdfwd(lambda x: vorx(apply_fn, params, t, x, y, z), (x,), (vec_x,), True)
+        wx_y, wx_yy = hvp_fwdfwd(lambda y: vorx(apply_fn, params, t, x, y, z), (y,), (vec_y,), True)
+        wx_z, wx_zz = hvp_fwdfwd(lambda z: vorx(apply_fn, params, t, x, y, z), (z,), (vec_z,), True)
         
-        ux_x = jvp(lambda x: apply_fn(params, t, x, y, z)[0], (x,), (vec,))[1]
-        ux_y = jvp(lambda y: apply_fn(params, t, x, y, z)[0], (y,), (vec,))[1]
-        ux_z = jvp(lambda z: apply_fn(params, t, x, y, z)[0], (z,), (vec,))[1]
+        ux_x = jvp(lambda x: apply_fn(params, t, x, y, z)[0], (x,), (vec_x,))[1]
+        ux_y = jvp(lambda y: apply_fn(params, t, x, y, z)[0], (y,), (vec_y,))[1]
+        ux_z = jvp(lambda z: apply_fn(params, t, x, y, z)[0], (z,), (vec_z,))[1]
 
         loss_x = jnp.mean((wx_t + ux*wx_x + uy*wx_y + uz*wx_z - \
              (wx*ux_x + wy*ux_y + wz*ux_z) - \
@@ -44,14 +46,14 @@ def apply_model_spinn(apply_fn, params, nu, lbda_c, lbda_ic, *train_data):
                     f[0])**2)
 
         # y-component
-        wy_t = jvp(lambda t: vory(apply_fn, params, t, x, y, z), (t,), (vec,))[1]
-        wy_x, wy_xx = hvp_fwdfwd(lambda x: vory(apply_fn, params, t, x, y, z), (x,), (vec,), True)
-        wy_y, wy_yy = hvp_fwdfwd(lambda y: vory(apply_fn, params, t, x, y, z), (y,), (vec,), True)
-        wy_z, wy_zz = hvp_fwdfwd(lambda z: vory(apply_fn, params, t, x, y, z), (z,), (vec,), True)
+        wy_t = jvp(lambda t: vory(apply_fn, params, t, x, y, z), (t,), (vec_t,))[1]
+        wy_x, wy_xx = hvp_fwdfwd(lambda x: vory(apply_fn, params, t, x, y, z), (x,), (vec_x,), True)
+        wy_y, wy_yy = hvp_fwdfwd(lambda y: vory(apply_fn, params, t, x, y, z), (y,), (vec_y,), True)
+        wy_z, wy_zz = hvp_fwdfwd(lambda z: vory(apply_fn, params, t, x, y, z), (z,), (vec_z,), True)
         
-        uy_x = jvp(lambda x: apply_fn(params, t, x, y, z)[1], (x,), (vec,))[1]
-        uy_y = jvp(lambda y: apply_fn(params, t, x, y, z)[1], (y,), (vec,))[1]
-        uy_z = jvp(lambda z: apply_fn(params, t, x, y, z)[1], (z,), (vec,))[1]
+        uy_x = jvp(lambda x: apply_fn(params, t, x, y, z)[1], (x,), (vec_x,))[1]
+        uy_y = jvp(lambda y: apply_fn(params, t, x, y, z)[1], (y,), (vec_y,))[1]
+        uy_z = jvp(lambda z: apply_fn(params, t, x, y, z)[1], (z,), (vec_z,))[1]
 
         loss_y = jnp.mean((wy_t + ux*wy_x + uy*wy_y + uz*wy_z - \
              (wx*uy_x + wy*uy_y + wz*uy_z) - \
@@ -59,14 +61,14 @@ def apply_model_spinn(apply_fn, params, nu, lbda_c, lbda_ic, *train_data):
                     f[1])**2)
 
         # z-component
-        wz_t = jvp(lambda t: vorz(apply_fn, params, t, x, y, z), (t,), (vec,))[1]
-        wz_x, wz_xx = hvp_fwdfwd(lambda x: vorz(apply_fn, params, t, x, y, z), (x,), (vec,), True)
-        wz_y, wz_yy = hvp_fwdfwd(lambda y: vorz(apply_fn, params, t, x, y, z), (y,), (vec,), True)
-        wz_z, wz_zz = hvp_fwdfwd(lambda z: vorz(apply_fn, params, t, x, y, z), (z,), (vec,), True)
+        wz_t = jvp(lambda t: vorz(apply_fn, params, t, x, y, z), (t,), (vec_t,))[1]
+        wz_x, wz_xx = hvp_fwdfwd(lambda x: vorz(apply_fn, params, t, x, y, z), (x,), (vec_x,), True)
+        wz_y, wz_yy = hvp_fwdfwd(lambda y: vorz(apply_fn, params, t, x, y, z), (y,), (vec_y,), True)
+        wz_z, wz_zz = hvp_fwdfwd(lambda z: vorz(apply_fn, params, t, x, y, z), (z,), (vec_z,), True)
         
-        uz_x = jvp(lambda x: apply_fn(params, t, x, y, z)[2], (x,), (vec,))[1]
-        uz_y = jvp(lambda y: apply_fn(params, t, x, y, z)[2], (y,), (vec,))[1]
-        uz_z = jvp(lambda z: apply_fn(params, t, x, y, z)[2], (z,), (vec,))[1]
+        uz_x = jvp(lambda x: apply_fn(params, t, x, y, z)[2], (x,), (vec_x,))[1]
+        uz_y = jvp(lambda y: apply_fn(params, t, x, y, z)[2], (y,), (vec_y,))[1]
+        uz_z = jvp(lambda z: apply_fn(params, t, x, y, z)[2], (z,), (vec_z,))[1]
 
         loss_z = jnp.mean((wz_t + ux*wz_x + uy*wz_y + uz*wz_z - \
              (wx*uz_x + wy*uz_y + wz*uz_z) - \

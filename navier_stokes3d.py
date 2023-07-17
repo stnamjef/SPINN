@@ -22,9 +22,10 @@ def apply_model_spinn(apply_fn, params, tc, xc, yc, ti, xi, yi, w0_gt, u0_gt, v0
     def residual_loss(params, t, x, y):
         # compute [u, v]
         uv = apply_fn(params, t, x, y)
-
+        # tangent vector dx/dx
         vec_t = jnp.ones(t.shape)
-        vec_xy = jnp.ones(x.shape)
+        vec_x = jnp.ones(x.shape)
+        vec_y = jnp.ones(y.shape)
         w_t = jvp(
             lambda t: velocity_to_vorticity_fwd(apply_fn, params, t, x, y), 
             (t,), 
@@ -33,29 +34,29 @@ def apply_model_spinn(apply_fn, params, tc, xc, yc, ti, xi, yi, w0_gt, u0_gt, v0
         w_x = jvp(
             lambda x: velocity_to_vorticity_fwd(apply_fn, params, t, x, y), 
             (x,), 
-            (vec_xy,)
+            (vec_x,)
         )[1]
         w_y = jvp(
             lambda y: velocity_to_vorticity_fwd(apply_fn, params, t, x, y), 
             (y,), 
-            (vec_xy,)
+            (vec_y,)
         )[1]
         w_xx = hvp_fwdfwd(
             lambda x: velocity_to_vorticity_fwd(apply_fn, params, t, x, y), 
             (x,), 
-            (vec_xy,)
+            (vec_x,)
         )
         w_yy = hvp_fwdfwd(
             lambda y: velocity_to_vorticity_fwd(apply_fn, params, t, x, y), 
             (y,), 
-            (vec_xy,)
+            (vec_y,)
         )
         # PDE constraint
         R_w = w_t + uv[0]*w_x + uv[1]*w_y - 0.01*(w_xx + w_yy)
 
         # incompressible fluid constraint
-        u_x = jvp(lambda x: apply_fn(params, t, x, y)[0], (x,), (vec_xy,))[1]
-        v_y = jvp(lambda y: apply_fn(params, t, x, y)[1], (y,), (vec_xy,))[1]
+        u_x = jvp(lambda x: apply_fn(params, t, x, y)[0], (x,), (vec_x,))[1]
+        v_y = jvp(lambda y: apply_fn(params, t, x, y)[1], (y,), (vec_y,))[1]
         R_c = u_x + v_y
 
         return jnp.mean(R_w**2) + lbda_c*jnp.mean(R_c**2)

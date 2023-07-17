@@ -19,12 +19,13 @@ def apply_model_spinn(apply_fn, params, *train_data):
         # calculate u
         u = apply_fn(params, t, x, y)
         # tangent vector dx/dx
-        # assumes t, x, y have same shape (very important)
-        v = jnp.ones(t.shape)
+        v_t = jnp.ones(t.shape)
+        v_x = jnp.ones(x.shape)
+        v_y = jnp.ones(y.shape)
         # 2nd derivatives of u
-        utt = hvp_fwdfwd(lambda t: apply_fn(params, t, x, y), (t,), (v,))
-        uxx = hvp_fwdfwd(lambda x: apply_fn(params, t, x, y), (x,), (v,))
-        uyy = hvp_fwdfwd(lambda y: apply_fn(params, t, x, y), (y,), (v,))
+        utt = hvp_fwdfwd(lambda t: apply_fn(params, t, x, y), (t,), (v_t,))
+        uxx = hvp_fwdfwd(lambda x: apply_fn(params, t, x, y), (x,), (v_x,))
+        uyy = hvp_fwdfwd(lambda y: apply_fn(params, t, x, y), (y,), (v_y,))
         return jnp.mean((utt - uxx - uyy + u**2 - source_term)**2)
 
     def initial_loss(params, t, x, y, u):
