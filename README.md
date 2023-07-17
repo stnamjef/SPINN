@@ -54,9 +54,10 @@ Find the original NS data from here: https://github.com/PredictiveIntelligenceLa
 # Citation
 
 ```
-@inproceedings{choseparable,
-  title={Separable PINN: Mitigating the Curse of Dimensionality in Physics-Informed Neural Networks},
+@article{cho2023separable,
+  title={Separable Physics-Informed Neural Networks},
   author={Cho, Junwoo and Nam, Seungtae and Yang, Hyunmo and Yun, Seok-Bae and Hong, Youngjoon and Park, Eunbyung},
-  booktitle={The Symbiosis of Deep Learning and Differential Equations II}
+  journal={arXiv preprint arXiv:2306.15969},
+  year={2023}
 }
 ```
