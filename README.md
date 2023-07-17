@@ -1,5 +1,5 @@
-# Jax implementation of Separable PINN
-### [Project Page](https://jwcho5576.github.io/spinn/) | [Paper](https://arxiv.org/abs/2211.08761)
+# JAX implementation of Separable PINN
+### [Project Page](https://jwcho5576.github.io/spinn.github.io/) | [Paper](https://arxiv.org/abs/2306.15969)
 
 [Junwoo Cho](https://github.com/jwcho5576)\*, 
 [Seungtae Nam](https://github.com/stnamjef)\*, 
@@ -7,11 +7,15 @@
 [Youngjoon Hong](https://www.youngjoonhong.com/), 
 [Seok-Bae Yun](https://seokbaeyun.wordpress.com/), 
 [Eunbyun Park](https://silverbottlep.github.io/)&dagger;\
-*Equal contribution, &dagger;Corresponding author.\
-The Symbiosis of Deep Learning and Differential Equations (DLDE), NeurIPS 2022 Workshop.
+*Equal contribution, &dagger;Corresponding author.
+
+
+https://github.com/stnamjef/SPINN/assets/94037424/46c4846a-680b-418c-80ef-2760d78402c4
+
 
 # Architecture overview
-![architecture](./assets/architecture.png)
+![architecture](https://github.com/stnamjef/SPINN/assets/94037424/e0669832-d0ec-47f2-bb18-43d38490e6b6)
+
 
 * SPINN consists of multiple MLPs, each of which takes an individual 1-dimensional coordinate as an input.
 * The output is constructed by a simple product and summation.
@@ -38,16 +42,14 @@ docker build -t spinn_environment .
 docker run -it -v $(pwd):/workspace -p 8888:8888 --gpus all --ipc host --name spinn spinn_environment:latest
 ```
 
-#### 4. Launch Jupyter and run the code
+#### 4. (for demo code) Launch Jupyter and run the code
 * run the command below inside the container.
 ```
 jupyter notebook --allow-root --ip 0.0.0.0 --port 8888
 ```
 
-# Example (Klein-Gordon Eq.)
-#### Please visit our [project page](https://jwcho5576.github.io/spinn/) for more examples.
-
-https://user-images.githubusercontent.com/47411051/217729201-7e0c2a1d-6d13-4352-9bd6-5054d8ead37d.mp4
+# Navier-Stokes Reference Data
+Find the original NS data from here: https://github.com/PredictiveIntelligenceLab/CausalPINNs/tree/main/data
 
 # Citation
 
