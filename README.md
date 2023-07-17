@@ -48,6 +48,16 @@ docker run -it -v $(pwd):/workspace -p 8888:8888 --gpus all --ipc host --name sp
 jupyter notebook --allow-root --ip 0.0.0.0 --port 8888
 ```
 
+# Training
+Run the command below:
+```
+XLA_PYTHON_CLIENT_PREALLOCATE=false CUDA_VISIBLE_DEVICES=0 python <EQUATIONnd>.py
+```
+You can also use our configurations by running the script files:
+```
+bash ./scripts/<EQUATIONnd_MODEL>.sh
+```
+
 # Navier-Stokes Reference Data
 Find the original NS data from here: https://github.com/PredictiveIntelligenceLab/CausalPINNs/tree/main/data
 
