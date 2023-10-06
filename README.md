@@ -7,7 +7,10 @@
 [Youngjoon Hong](https://www.youngjoonhong.com/), 
 [Seok-Bae Yun](https://seokbaeyun.wordpress.com/), 
 [Eunbyun Park](https://silverbottlep.github.io/)&dagger;\
-*Equal contribution, &dagger;Corresponding author.
+*Equal contribution, &dagger;Corresponding author.\
+\
+Conference on Neural Information Processing Systems (NeurIPS 2023)\
+**Spotlight presentation**
 
 
 https://github.com/stnamjef/SPINN/assets/94037424/46c4846a-680b-418c-80ef-2760d78402c4
@@ -67,7 +70,7 @@ Find the original NS data from here: https://github.com/PredictiveIntelligenceLa
 @article{cho2023separable,
   title={Separable Physics-Informed Neural Networks},
   author={Cho, Junwoo and Nam, Seungtae and Yang, Hyunmo and Yun, Seok-Bae and Hong, Youngjoon and Park, Eunbyung},
-  journal={arXiv preprint arXiv:2306.15969},
+  journal={Advances in Neural Information Processing Systems},
   year={2023}
 }
 ```
