@@ -1,0 +1,1 @@
+XLA_PYTHON_CLIENT_PREALLOCATE=false CUDA_VISIBLE_DEVICES=1 python flow_mixing3d.py --model=pinn --equation=flow_mixing3d --nc=32 --nc_test=100 --seed=111 --lr=1e-3 --epochs=50000 --mlp=modified_mlp --n_layers=5 --features=128 --out_dim=1 --pos_enc=0 --vmax=0.385 --log_iter=5000 --plot_iter=50000

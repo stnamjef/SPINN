@@ -10,36 +10,38 @@ from tqdm import trange
 from utils.data_generators import generate_test_data, generate_train_data
 from utils.eval_functions import setup_eval_function
 from utils.training_utils import *
-from utils.visualizer import show_solution
 
 
 @partial(jax.jit, static_argnums=(0,))
 def apply_model_spinn(apply_fn, params, *train_data):
-    def residual_loss(params, x, y, z, source_term, lda=1.):
-        # compute u
-        u = apply_fn(params, x, y, z)
+    def residual_loss(params, t, x, y, a, b):
         # tangent vector dx/dx
+        v_t = jnp.ones(t.shape)
         v_x = jnp.ones(x.shape)
         v_y = jnp.ones(y.shape)
-        v_z = jnp.ones(z.shape)
-        # 2nd derivatives of u
-        uxx = hvp_fwdfwd(lambda x: apply_fn(params, x, y, z), (x,), (v_x,))
-        uyy = hvp_fwdfwd(lambda y: apply_fn(params, x, y, z), (y,), (v_y,))
-        uzz = hvp_fwdfwd(lambda z: apply_fn(params, x, y, z), (z,), (v_z,))
-        return jnp.mean(((uzz + uyy + uxx + lda*u) - source_term)**2)
+        # 1st derivatives of u
+        ut = jvp(lambda t: apply_fn(params, t, x, y), (t,), (v_t,))[1]
+        ux = jvp(lambda x: apply_fn(params, t, x, y), (x,), (v_x,))[1]
+        uy = jvp(lambda y: apply_fn(params, t, x, y), (y,), (v_y,))[1]
+        return jnp.mean((ut + a*ux + b*uy)**2)
 
-    def boundary_loss(params, x, y, z):
+    def initial_loss(params, t, x, y, u):
+        return jnp.mean((apply_fn(params, t, x, y) - u)**2)
+
+    def boundary_loss(params, t, x, y, u):
         loss = 0.
-        for i in range(6):
-            loss += jnp.mean(apply_fn(params, x[i], y[i], z[i])**2)
+        for i in range(4):
+            loss += jnp.mean((apply_fn(params, t[i], x[i], y[i]) - u[i])**2)
         return loss
 
     # unpack data
-    xc, yc, zc, uc, xb, yb, zb = train_data
+    tc, xc, yc, ti, xi, yi, ui, tb, xb, yb, ub, a, b = train_data
 
     # isolate loss func from redundant arguments
+    loss_fn = lambda params: 10*residual_loss(params, tc, xc, yc, a, b) + \
+                        initial_loss(params, ti, xi, yi, ui) + \
+                        boundary_loss(params, tb, xb, yb, ub)
 
-    loss_fn = lambda params: residual_loss(params, xc, yc, zc, uc) + boundary_loss(params, xb, yb, zb)
     loss, gradient = jax.value_and_grad(loss_fn)(params)
 
     return loss, gradient
@@ -47,29 +49,38 @@ def apply_model_spinn(apply_fn, params, *train_data):
 
 @partial(jax.jit, static_argnums=(0,))
 def apply_model_pinn(apply_fn, params, *train_data):
-    def residual_loss(params, x, y, z, source_term, lda=1.):
+    def residual_loss(params, t, x, y, a, b):
         # compute u
-        u = apply_fn(params, x, y, z)
+        # u = apply_fn(params, t, x, y)
         # tangent vector du/du
-        v = jnp.ones(u.shape)
-        # 2nd derivatives of u
-        uxx = hvp_fwdrev(lambda x: apply_fn(params, x, y, z), (x,), (v,))
-        uyy = hvp_fwdrev(lambda y: apply_fn(params, x, y, z), (y,), (v,))
-        uzz = hvp_fwdrev(lambda z: apply_fn(params, x, y, z), (z,), (v,))
-        return jnp.mean(((uxx + uyy + uzz + lda*u) - source_term)**2)
+        v = jnp.ones(t.shape)
+        # 1st derivatives of u
+        ut = vjp(lambda t: apply_fn(params, t, x, y), t)[1](v)[0]
+        ux = vjp(lambda x: apply_fn(params, t, x, y), x)[1](v)[0]
+        uy = vjp(lambda y: apply_fn(params, t, x, y), y)[1](v)[0]
+        return jnp.mean((ut + a*ux + b*uy)**2)
 
-    def boundary_loss(params, x, y, z):
-        return jnp.mean(apply_fn(params, x, y, z)**2)
+    def initial_boundary_loss(params, t, x, y, u):
+        return jnp.mean((apply_fn(params, t, x, y) - u)**2)
 
     # unpack data
-    xc, yc, zc, uc, xb, yb, zb = train_data
+    tc, xc, yc, ti, xi, yi, ui, tb, xb, yb, ub, a, b = train_data
 
-    # isolate loss func from redundant arguments
-    loss_fn = lambda params: residual_loss(params, xc, yc, zc, uc) + boundary_loss(params, xb, yb, zb)
+    # isolate loss function from redundant arguments
+    loss_fn = lambda params: 10*residual_loss(params, tc, xc, yc, a, b) + \
+                        initial_boundary_loss(params, ti, xi, yi, ui) + \
+                        initial_boundary_loss(params, tb, xb, yb, ub)
 
     loss, gradient = jax.value_and_grad(loss_fn)(params)
 
     return loss, gradient
+
+
+@partial(jax.jit, static_argnums=(0,))
+def update_model(optim, gradient, params, state):
+    updates, state = optim.update(gradient, state)
+    params = optax.apply_updates(params, updates)
+    return params, state
 
 
 if __name__ == '__main__':
@@ -78,8 +89,8 @@ if __name__ == '__main__':
 
     # model and equation
     parser.add_argument('--model', type=str, default='spinn', choices=['spinn', 'pinn'], help='model name (pinn; spinn)')
-    parser.add_argument('--equation', type=str, default='helmholtz3d', help='equation to solve')
-    
+    parser.add_argument('--equation', type=str, default='flow_mixing3d', help='equation to solve')
+
     # input data settings
     parser.add_argument('--nc', type=int, default=64, help='the number of input points for each axis')
     parser.add_argument('--nc_test', type=int, default=100, help='the number of test points for each axis')
@@ -92,18 +103,16 @@ if __name__ == '__main__':
     # model settings
     parser.add_argument('--mlp', type=str, default='modified_mlp', choices=['mlp', 'modified_mlp'], help='type of mlp')
     parser.add_argument('--n_layers', type=int, default=3, help='the number of layer')
-    parser.add_argument('--features', type=int, default=128, help='feature size of each layer')
-    parser.add_argument('--r', type=int, default=128, help='rank of the approximated tensor')
+    parser.add_argument('--features', type=int, default=64, help='feature size of each layer')
+    parser.add_argument('--r', type=int, default=128, help='rank of a approximated tensor')
     parser.add_argument('--out_dim', type=int, default=1, help='size of model output')
     parser.add_argument('--pos_enc', type=int, default=0, help='size of the positional encoding (zero if no encoding)')
 
-    # helmholtz coefficients
-    parser.add_argument('--a1', type = int, default = 4, help = 'sin(a1*pi*x)sin(a2*pi*y)sin(a3*pi*z)')
-    parser.add_argument('--a2', type = int, default = 4, help = 'sin(a1*pi*x)sin(a2*pi*y)sin(a3*pi*z)')
-    parser.add_argument('--a3', type = int, default = 3, help = 'sin(a1*pi*x)sin(a2*pi*y)sin(a3*pi*z)')
-    
+    # PDE settings
+    parser.add_argument('--vmax', type=float, default=0.385, help='maximum tangential velocity')
+
     # log settings
-    parser.add_argument('--log_iter', type=int, default=10000, help='print log every...')
+    parser.add_argument('--log_iter', type=int, default=5000, help='print log every...')
     parser.add_argument('--plot_iter', type=int, default=50000, help='plot result every...')
 
     args = parser.parse_args()
@@ -134,10 +143,10 @@ if __name__ == '__main__':
 
     # dataset
     key, subkey = jax.random.split(key, 2)
-    train_data = generate_train_data(args, subkey, result_dir=result_dir)
+    train_data = generate_train_data(args, subkey)
     test_data = generate_test_data(args, result_dir)
 
-    # loss & evaluation function
+    # evaluation function
     eval_fn = setup_eval_function(args.model, args.equation)
 
     # save training configuration
@@ -162,6 +171,7 @@ if __name__ == '__main__':
             key, subkey = jax.random.split(key, 2)
             train_data = generate_train_data(args, subkey)
 
+        # single run
         if args.model == 'spinn':
             loss, gradient = apply_model_spinn(apply_fn, params, *train_data)
         elif args.model == 'pinn':
@@ -169,7 +179,6 @@ if __name__ == '__main__':
         params, state = update_model(optim, gradient, params, state)
 
         if e % 10 == 0:
-            # save the best error when the loss value is lowest
             if loss < best:
                 best = loss
                 best_error = eval_fn(apply_fn, params, *test_data)
@@ -180,11 +189,6 @@ if __name__ == '__main__':
             print(f'Epoch: {e}/{args.epochs} --> total loss: {loss:.8f}, error: {error:.8f}, best error {best_error:.8f}')
             with open(os.path.join(result_dir, 'log (loss, error).csv'), 'a') as f:
                 f.write(f'{loss}, {error}, {best_error}\n')
-
-        # visualization
-        if e % args.plot_iter == 0:
-            show_solution(args, apply_fn, params, test_data, result_dir, e, resol=50)
-
 
     # training done
     runtime = time.time() - start
@@ -198,3 +202,4 @@ if __name__ == '__main__':
     # save total error
     with open(os.path.join(result_dir, 'best_error.csv'), 'a') as f:
         f.write(f'best error: {best_error}\n')
+
