@@ -479,6 +479,59 @@ def _spinn_train_generator_flow_mixing3d(nc, v_max, key):
     return tc, xc, yc, ti, xi, yi, ui, tb, xb, yb, ub, a, b
 
 
+#=========================== Poisson equation 2-d ==========================#
+#---------------------------------- SPINN -----------------------------------#
+def _spinn_train_generator_poisson2d(nx, key):
+    keys = jax.random.split(key, 10)
+    # collocation points
+    xc1 = jnp.expand_dims(jnp.linspace(start=-1., stop=0., num=nx, endpoint=False), axis=1)
+    yc1 = jnp.expand_dims(jnp.linspace(start=-1., stop=1., num=nx, endpoint=False), axis=1)
+    xc2 = jnp.expand_dims(jnp.linspace(start=0., stop=1., num=nx, endpoint=False), axis=1)
+    yc2 = jnp.expand_dims(jnp.linspace(start=-1., stop=0., num=nx, endpoint=False), axis=1)
+
+    xb = [
+        jnp.expand_dims(jnp.linspace(start=-1., stop=1., num=nx, endpoint=True), axis=1),
+        jnp.array([[1.]]),
+        jnp.expand_dims(jnp.linspace(start=0., stop=1., num=nx, endpoint=True), axis=1),
+        jnp.array([[0.]]),
+        jnp.expand_dims(jnp.linspace(start=-1., stop=0., num=nx, endpoint=True), axis=1),
+        jnp.array([[-1.]]),
+    ]
+
+    yb = [
+        jnp.array([[-1.]]),
+        jnp.expand_dims(jnp.linspace(start=-1., stop=0., num=nx, endpoint=True), axis=1),
+        jnp.array([[0.]]),
+        jnp.expand_dims(jnp.linspace(start=0., stop=1., num=nx, endpoint=True), axis=1),
+        jnp.array([[1.]]),
+        jnp.expand_dims(jnp.linspace(start=-1., stop=1., num=nx, endpoint=True), axis=1),
+    ]
+
+    xc1_mult = jnp.expand_dims(xc1, axis=0)
+    yc1_mult = jnp.expand_dims(yc1, axis=0)
+    xc2_mult = jnp.expand_dims(xc2, axis=0)
+    yc2_mult = jnp.expand_dims(yc2, axis=0)
+
+    dx1 = xc1[1][0] - xc1[0][0]
+    dy1 = yc1[1][0] - yc1[0][0]
+    dx2 = xc2[1][0] - xc2[0][0]
+    dy2 = yc2[1][0] - yc2[0][0]
+
+    offset_x1 = jax.random.uniform(keys[0], (8-1,), minval=0., maxval=dx1)
+    offset_y1 = jax.random.uniform(keys[1], (8-1,), minval=0., maxval=dy1)
+    offset_x2 = jax.random.uniform(keys[2], (8-1,), minval=0., maxval=dx2)
+    offset_y2 = jax.random.uniform(keys[3], (8-1,), minval=0., maxval=dy2)
+
+    # make multi-grid
+    for i in range(8-1):
+        xc1_mult = jnp.concatenate((xc1_mult, jnp.expand_dims(xc1 + offset_x1[i], axis= 0)), axis=0)
+        yc1_mult = jnp.concatenate((yc1_mult, jnp.expand_dims(yc1 + offset_y1[i], axis=0)), axis=0)
+        xc2_mult = jnp.concatenate((xc2_mult, jnp.expand_dims(xc2 + offset_x2[i], axis= 0)), axis=0)
+        yc2_mult = jnp.concatenate((yc2_mult, jnp.expand_dims(yc2 + offset_y2[i], axis=0)), axis=0)
+
+    return xc1_mult, yc1_mult, xc2_mult, yc2_mult, xb, yb
+
+
 def generate_train_data(args, key, result_dir=None):
     eqn = args.equation
     if args.model == 'pinn':
@@ -532,6 +585,10 @@ def generate_train_data(args, key, result_dir=None):
         elif eqn == 'flow_mixing3d':
             data = _spinn_train_generator_flow_mixing3d(
                 args.nc, args.vmax, key
+            )
+        elif eqn == 'poisson2d':
+            data = _spinn_train_generator_poisson2d(
+                args.nc, key
             )
         else:
             raise NotImplementedError
@@ -740,6 +797,26 @@ def _test_generator_flow_mixing3d(model, nc_test, v_max):
     return t, x, y, u_gt
 
 
+#----------------------- Poisson 2-d -------------------------#
+def _test_generator_poisson2d(model, data_dir):
+    data = jnp.load(os.path.join(data_dir, 'Poisson_Lshape.npz'))
+    x = data['X_test'][::161][:,0]
+    y = data['X_test'][::161][:,0]
+    u_gt = data['y_ref'].reshape(161, 161)
+    u_gt = jnp.nan_to_num(u_gt, nan=0.)
+
+    xm, ym = jnp.meshgrid(x, y, indexing='ij')
+    if model == 'pinn':
+        x = xm.reshape(-1, 1)
+        y = ym.reshape(-1, 1)
+        u_gt = u_gt.reshape(-1, 1)
+    else:
+        x = x.reshape(-1, 1)
+        y = y.reshape(-1, 1)
+    # pdb.set_trace()
+    return x, y, u_gt
+
+
 def generate_test_data(args, result_dir):
     eqn = args.equation
     if eqn == 'diffusion3d':
@@ -769,6 +846,10 @@ def generate_test_data(args, result_dir):
     elif eqn == 'flow_mixing3d':
         data = _test_generator_flow_mixing3d(
             args.model, args.nc_test, args.vmax
+        )
+    elif eqn == 'poisson2d':
+        data = _test_generator_poisson2d(
+            args.model, args.data_dir
         )
     else:
         raise NotImplementedError

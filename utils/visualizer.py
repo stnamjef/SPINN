@@ -251,6 +251,20 @@ def _navier_stokes4d(apply_fn, params, test_data, result_dir, e):
     plt.close()
 
 
+# temporary code
+def _poisson2d(args, apply_fn, params, test_data, result_dir, e):
+    print("visualizing solution...")
+    os.makedirs(os.path.join(result_dir, f'vis/{e:05d}'), exist_ok=True)
+    x, y, u_gt = test_data
+
+    u_pred = apply_fn(params, x, y).reshape(161, 161)
+    jnp.save(os.path.join(result_dir, f'vis/{e:05d}/pred.npy'), u_pred)
+    plt.imshow(u_pred, vmin=0.)
+    plt.colorbar()
+    plt.savefig(os.path.join(result_dir, f'vis/{e:05d}/pred.png'))
+    plt.close()
+
+
 def show_solution(args, apply_fn, params, test_data, result_dir, e, resol=50):
     if args.equation == 'diffusion3d':
         _diffusion3d(args, apply_fn, params, test_data, result_dir, e, resol)
@@ -262,5 +276,7 @@ def show_solution(args, apply_fn, params, test_data, result_dir, e, resol=50):
         _navier_stokes3d(apply_fn, params, test_data, result_dir, e)
     elif args.equation == 'navier_stokes4d':
         _navier_stokes4d(apply_fn, params, test_data, result_dir, e)
+    elif args.equation == 'poisson2d':
+        _poisson2d(args, apply_fn, params, test_data, result_dir, e)
     else:
         raise NotImplementedError
