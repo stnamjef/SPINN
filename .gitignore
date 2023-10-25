@@ -1,5 +1,4 @@
 results/**
 **.pyc
-data/**
 navier_stokes3d_video.py
 ns_video.ipynb
